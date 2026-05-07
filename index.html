@@ -2,24 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Ultimate AI Space Racing Game</title>
 
 <style>
 
-body{
+*{
     margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
     overflow:hidden;
     background:black;
     font-family:Arial;
     color:white;
 }
 
-/* =========================
-TOP BAR
-========================= */
+/* TOP BAR */
 
 #topBar{
     position:absolute;
@@ -40,11 +42,11 @@ button{
     border-radius:10px;
     cursor:pointer;
     font-weight:bold;
+    background:#00aaff;
+    color:white;
 }
 
-/* =========================
-GAME AREA
-========================= */
+/* GAME AREA */
 
 #gameArea{
     width:100%;
@@ -56,9 +58,7 @@ GAME AREA
     #000000,#111133,#000000);
 }
 
-/* =========================
-STARS
-========================= */
+/* STARS */
 
 .star{
     width:3px;
@@ -66,18 +66,16 @@ STARS
     background:white;
     position:absolute;
     border-radius:50%;
+    opacity:.8;
 }
 
-/* =========================
-PLAYER CAR
-========================= */
+/* PLAYER */
 
 #car{
     width:80px;
     height:130px;
     background:
-    linear-gradient(to bottom,
-    #00c8ff,#0066ff);
+    linear-gradient(to bottom,#00c8ff,#0066ff);
 
     position:absolute;
     bottom:30px;
@@ -92,9 +90,7 @@ PLAYER CAR
     box-shadow:0 0 25px cyan;
 }
 
-/* =========================
-GUN
-========================= */
+/* GUN */
 
 #gun{
     width:12px;
@@ -104,12 +100,9 @@ GUN
     top:-35px;
     left:34px;
     border-radius:10px;
-    box-shadow:0 0 10px white;
 }
 
-/* =========================
-NITRO FLAMES
-========================= */
+/* FLAMES */
 
 .flame{
     width:18px;
@@ -138,7 +131,7 @@ NITRO FLAMES
     }
 
     50%{
-        transform:scaleY(1.5);
+        transform:scaleY(1.6);
         background:yellow;
     }
 
@@ -148,16 +141,14 @@ NITRO FLAMES
     }
 }
 
-/* =========================
-ALIEN SHIPS
-========================= */
+/* ENEMY */
 
 .enemy{
     width:80px;
     height:80px;
+
     background:
-    radial-gradient(circle,
-    lime,green);
+    radial-gradient(circle,lime,green);
 
     border-radius:50% 50% 20% 20%;
 
@@ -165,14 +156,12 @@ ALIEN SHIPS
 
     top:-100px;
 
-    box-shadow:0 0 25px lime;
-
     border:3px solid white;
+
+    box-shadow:0 0 25px lime;
 }
 
-/* =========================
-COINS
-========================= */
+/* COINS */
 
 .coin{
     width:40px;
@@ -183,9 +172,7 @@ COINS
     box-shadow:0 0 20px yellow;
 }
 
-/* =========================
-BULLETS
-========================= */
+/* BULLETS */
 
 .bullet{
     width:8px;
@@ -196,9 +183,7 @@ BULLETS
     box-shadow:0 0 15px yellow;
 }
 
-/* =========================
-EXPLOSION
-========================= */
+/* EXPLOSION */
 
 .explosion{
     width:80px;
@@ -222,9 +207,7 @@ EXPLOSION
     }
 }
 
-/* =========================
-GAME OVER
-========================= */
+/* GAME OVER */
 
 #gameOver{
     position:absolute;
@@ -247,10 +230,6 @@ GAME OVER
 </head>
 
 <body>
-
-<!-- =========================
-TOP BAR
-========================= -->
 
 <div id="topBar">
 
@@ -275,21 +254,15 @@ START
 
 </div>
 
-<!-- =========================
-GAME AREA
-========================= -->
-
 <div id="gameArea">
 
 <div id="car">
 
 <div id="gun"></div>
 
-<div class="flame"
-id="flame1"></div>
+<div class="flame" id="flame1"></div>
 
-<div class="flame"
-id="flame2"></div>
+<div class="flame" id="flame2"></div>
 
 </div>
 
@@ -311,139 +284,86 @@ RESTART
 autoplay
 playsinline></video>
 
-<!-- =========================
-AUDIO
-========================= -->
+<!-- AUDIO -->
 
-<audio id="shootSound">
-<source src=
-"https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3?filename=laser-81720.mp3">
+<audio id="shootSound"
+src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3?filename=laser-81720.mp3">
 </audio>
 
-<audio id="crashSound">
-<source src=
-"https://cdn.pixabay.com/download/audio/2022/03/15/audio_7f3fd8f7f8.mp3?filename=car-crash-110371.mp3">
+<audio id="crashSound"
+src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7f3fd8f7f8.mp3?filename=car-crash-110371.mp3">
 </audio>
 
-<!-- =========================
-MEDIAPIPE
-========================= -->
+<!-- MEDIAPIPE -->
 
-<script src=
-"https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js">
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
 
-<script src=
-"https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js">
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
 <script>
 
-/* =========================
-VARIABLES
-========================= */
+/* VARIABLES */
 
-const gameArea =
-document.getElementById("gameArea");
+const gameArea = document.getElementById("gameArea");
+const car = document.getElementById("car");
 
-const car =
-document.getElementById("car");
+const scoreText = document.getElementById("score");
+const coinText = document.getElementById("coins");
+const nitroText = document.getElementById("nitro");
+const ammoText = document.getElementById("ammo");
+const bestText = document.getElementById("bestScore");
 
-const scoreText =
-document.getElementById("score");
-
-const coinText =
-document.getElementById("coins");
-
-const nitroText =
-document.getElementById("nitro");
-
-const ammoText =
-document.getElementById("ammo");
-
-const bestText =
-document.getElementById("bestScore");
-
-const startBtn =
-document.getElementById("startBtn");
-
-const gameOverBox =
-document.getElementById("gameOver");
-
-const finalScore =
-document.getElementById("finalScore");
-
-const flame1 =
-document.getElementById("flame1");
-
-const flame2 =
-document.getElementById("flame2");
+const flame1 = document.getElementById("flame1");
+const flame2 = document.getElementById("flame2");
 
 let score = 0;
-
 let coins = 0;
-
 let speed = 5;
 
-let gameRunning = false;
-
-let nitroCooldown = false;
-
-let firing = false;
-
 let ammo = 30;
-
 let reloading = false;
 
-let best =
-localStorage.getItem("bestScore") || 0;
+let gameRunning = false;
+let firing = false;
+let nitroCooldown = false;
 
+let best = localStorage.getItem("bestScore") || 0;
 bestText.innerHTML = best;
 
-/* =========================
-CREATE STARS
-========================= */
+/* CREATE STARS */
 
-for(let i=0;i<100;i++){
+for(let i=0;i<120;i++){
 
-    let star =
-    document.createElement("div");
+    let star = document.createElement("div");
 
     star.classList.add("star");
 
-    star.style.left =
-    Math.random()*100+"%";
-
-    star.style.top =
-    Math.random()*100+"%";
+    star.style.left = Math.random()*100+"%";
+    star.style.top = Math.random()*100+"%";
 
     gameArea.appendChild(star);
 }
 
-/* =========================
-START GAME
-========================= */
+/* START GAME */
 
-startBtn.onclick = ()=>{
-
-    startBtn.style.display="none";
+document.getElementById("startBtn").onclick = ()=>{
 
     gameRunning = true;
+
+    document.getElementById("startBtn").style.display="none";
 
     startGame();
 
     startHandTracking();
 };
 
-/* =========================
-MAIN LOOP
-========================= */
+/* GAME LOOP */
 
 function startGame(){
 
-    createEnemy();
+    setInterval(createEnemy,1200);
 
-    createCoin();
+    setInterval(createCoin,3000);
 
     requestAnimationFrame(playGame);
 }
@@ -453,7 +373,6 @@ function playGame(){
     if(!gameRunning) return;
 
     moveEnemies();
-
     moveCoins();
 
     score++;
@@ -463,34 +382,23 @@ function playGame(){
     requestAnimationFrame(playGame);
 }
 
-/* =========================
-CREATE ALIEN SHIPS
-========================= */
+/* ENEMIES */
 
 function createEnemy(){
 
-    setInterval(()=>{
+    if(!gameRunning) return;
 
-        if(!gameRunning) return;
+    let enemy = document.createElement("div");
 
-        let enemy =
-        document.createElement("div");
+    enemy.classList.add("enemy");
 
-        enemy.classList.add("enemy");
+    enemy.style.left =
+    Math.random()*(window.innerWidth-100)+"px";
 
-        enemy.style.left =
-        Math.random()*80+"%";
+    enemy.y = -100;
 
-        enemy.y = -100;
-
-        gameArea.appendChild(enemy);
-
-    },1200);
+    gameArea.appendChild(enemy);
 }
-
-/* =========================
-MOVE ENEMIES
-========================= */
 
 function moveEnemies(){
 
@@ -501,45 +409,37 @@ function moveEnemies(){
 
         enemy.y += speed;
 
-        enemy.style.top =
-        enemy.y + "px";
+        enemy.style.top = enemy.y+"px";
 
         if(isCollide(car,enemy)){
 
             endGame();
         }
 
-        if(enemy.y >
-           window.innerHeight){
+        if(enemy.y > window.innerHeight){
 
             enemy.remove();
         }
     });
 }
 
-/* =========================
-COINS
-========================= */
+/* COINS */
 
 function createCoin(){
 
-    setInterval(()=>{
+    if(!gameRunning) return;
 
-        if(!gameRunning) return;
+    let coin =
+    document.createElement("div");
 
-        let coin =
-        document.createElement("div");
+    coin.classList.add("coin");
 
-        coin.classList.add("coin");
+    coin.style.left =
+    Math.random()*(window.innerWidth-50)+"px";
 
-        coin.style.left =
-        Math.random()*80+"%";
+    coin.y = -50;
 
-        coin.y = -50;
-
-        gameArea.appendChild(coin);
-
-    },3000);
+    gameArea.appendChild(coin);
 }
 
 function moveCoins(){
@@ -552,7 +452,7 @@ function moveCoins(){
         coin.y += speed;
 
         coin.style.top =
-        coin.y + "px";
+        coin.y+"px";
 
         if(isCollide(car,coin)){
 
@@ -563,51 +463,44 @@ function moveCoins(){
             coin.remove();
         }
 
-        if(coin.y >
-           window.innerHeight){
+        if(coin.y > window.innerHeight){
 
             coin.remove();
         }
     });
 }
 
-/* =========================
-COLLISION
-========================= */
+/* COLLISION */
 
 function isCollide(a,b){
 
-    let aRect =
-    a.getBoundingClientRect();
-
-    let bRect =
-    b.getBoundingClientRect();
+    let aRect = a.getBoundingClientRect();
+    let bRect = b.getBoundingClientRect();
 
     return !(
 
-    aRect.bottom < bRect.top ||
-    aRect.top > bRect.bottom ||
-    aRect.right < bRect.left ||
-    aRect.left > bRect.right
+        aRect.bottom < bRect.top ||
+        aRect.top > bRect.bottom ||
+        aRect.right < bRect.left ||
+        aRect.left > bRect.right
     );
 }
 
-/* =========================
-GAME OVER
-========================= */
+/* GAME OVER */
 
 function endGame(){
 
+    if(!gameRunning) return;
+
     gameRunning = false;
 
-    document.getElementById(
-    "crashSound").play();
+    document.getElementById("crashSound").play();
 
-    finalScore.innerHTML =
-    "Final Score : " + score;
+    document.getElementById("gameOver")
+    .style.display="block";
 
-    gameOverBox.style.display =
-    "block";
+    document.getElementById("finalScore")
+    .innerHTML = "Final Score : " + score;
 
     if(score > best){
 
@@ -616,21 +509,21 @@ function endGame(){
     }
 }
 
-/* =========================
-SHOOT BULLET
-========================= */
+/* SHOOT */
 
 function shootBullet(){
 
-    if(ammo <= 0 || reloading)
-    return;
+    if(ammo<=0 || reloading) return;
 
     ammo--;
 
     ammoText.innerHTML = ammo;
 
-    document.getElementById(
-    "shootSound").play();
+    document.getElementById("shootSound")
+    .currentTime = 0;
+
+    document.getElementById("shootSound")
+    .play();
 
     let bullet =
     document.createElement("div");
@@ -638,31 +531,30 @@ function shootBullet(){
     bullet.classList.add("bullet");
 
     bullet.style.left =
-    car.offsetLeft + 36 + "px";
+    (car.offsetLeft + 36)+"px";
 
     bullet.y =
     window.innerHeight - 170;
 
     bullet.style.top =
-    bullet.y + "px";
+    bullet.y+"px";
 
     gameArea.appendChild(bullet);
 
-    let move =
+    let moveBullet =
     setInterval(()=>{
 
         bullet.y -= 18;
 
         bullet.style.top =
-        bullet.y + "px";
+        bullet.y+"px";
 
         let enemies =
         document.querySelectorAll(".enemy");
 
         enemies.forEach(enemy=>{
 
-            if(isCollide(
-            bullet,enemy)){
+            if(isCollide(bullet,enemy)){
 
                 createExplosion(
                 enemy.offsetLeft,
@@ -673,59 +565,62 @@ function shootBullet(){
                 bullet.remove();
 
                 score += 100;
+
+                clearInterval(moveBullet);
             }
         });
 
-        if(bullet.y < 0){
+        if(bullet.y < -50){
 
             bullet.remove();
 
-            clearInterval(move);
+            clearInterval(moveBullet);
         }
 
     },20);
 
-    /* RELOAD */
+    if(ammo<=0){
 
-    if(ammo <= 0){
-
-        reloading = true;
-
-        ammoText.innerHTML =
-        "RELOADING";
-
-        setTimeout(()=>{
-
-            ammo = 30;
-
-            ammoText.innerHTML =
-            ammo;
-
-            reloading = false;
-
-        },3000);
+        reloadAmmo();
     }
 }
 
-/* =========================
-AUTO FIRE
-========================= */
+/* RELOAD */
+
+function reloadAmmo(){
+
+    reloading = true;
+
+    ammoText.innerHTML =
+    "Reloading...";
+
+    setTimeout(()=>{
+
+        ammo = 30;
+
+        ammoText.innerHTML = ammo;
+
+        reloading = false;
+
+    },3000);
+}
+
+/* AUTO FIRE */
 
 function autoFire(){
 
-    if(firing) return;
+    if(firing || reloading) return;
 
     firing = true;
 
-    let bulletsFired = 0;
+    let bullets = 0;
 
     let fireInterval =
     setInterval(()=>{
 
-        if(bulletsFired >= 30){
+        if(bullets >= 30){
 
-            clearInterval(
-            fireInterval);
+            clearInterval(fireInterval);
 
             firing = false;
 
@@ -734,31 +629,24 @@ function autoFire(){
 
         shootBullet();
 
-        bulletsFired++;
+        bullets++;
 
     },166);
 }
 
-/* =========================
-EXPLOSION
-========================= */
+/* EXPLOSION */
 
 function createExplosion(x,y){
 
     let explosion =
     document.createElement("div");
 
-    explosion.classList.add(
-    "explosion");
+    explosion.classList.add("explosion");
 
-    explosion.style.left =
-    x + "px";
+    explosion.style.left = x+"px";
+    explosion.style.top = y+"px";
 
-    explosion.style.top =
-    y + "px";
-
-    gameArea.appendChild(
-    explosion);
+    gameArea.appendChild(explosion);
 
     setTimeout(()=>{
 
@@ -767,18 +655,14 @@ function createExplosion(x,y){
     },500);
 }
 
-/* =========================
-HAND TRACKING
-========================= */
+/* HAND TRACKING */
 
 async function startHandTracking(){
 
     const video =
-    document.getElementById(
-    "video");
+    document.getElementById("video");
 
-    const hands =
-    new Hands({
+    const hands = new Hands({
 
         locateFile:file=>
         `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
@@ -794,25 +678,22 @@ async function startHandTracking(){
 
     hands.onResults(results=>{
 
-        if(results.multiHandLandmarks
-        .length > 0){
+        if(results.multiHandLandmarks.length > 0){
 
             let landmarks =
             results.multiHandLandmarks[0];
 
-            /* CAR MOVE */
+            /* MOVE CAR */
 
-            let x =
-            landmarks[9].x;
+            let x = landmarks[9].x;
 
             let moveX =
-            (1-x) *
-            (window.innerWidth-80);
+            (1-x)*(window.innerWidth-80);
 
             car.style.left =
-            moveX + "px";
+            moveX+"px";
 
-            /* FINGERS */
+            /* FINGER DETECTION */
 
             let index =
             landmarks[8].y <
@@ -853,8 +734,7 @@ async function startHandTracking(){
                 "none";
             }
 
-            /* CLOSED FIST
-            = NITRO */
+            /* CLOSED FIST */
 
             if(fingerCount === 0 &&
             !nitroCooldown){
@@ -890,8 +770,7 @@ async function startHandTracking(){
                 },5000);
             }
 
-            /* ONE FINGER
-            = AUTO FIRE */
+            /* ONE FINGER */
 
             if(fingerCount === 1){
 
@@ -906,7 +785,7 @@ async function startHandTracking(){
         onFrame:async()=>{
 
             await hands.send({
-            image:video
+                image:video
             });
         },
 
