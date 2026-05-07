@@ -1,288 +1,923 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Hand Control Car Game</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Ultimate AI Space Racing Game</title>
+
 <style>
-    body {
-        margin: 0;
-        background: #111;
-        font-family: Arial;
-        color: white;
-        text-align: center;
-        overflow: hidden;
+
+body{
+    margin:0;
+    overflow:hidden;
+    background:black;
+    font-family:Arial;
+    color:white;
+}
+
+/* =========================
+TOP BAR
+========================= */
+
+#topBar{
+    position:absolute;
+    top:10px;
+    width:100%;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    z-index:1000;
+    flex-wrap:wrap;
+    font-size:18px;
+    font-weight:bold;
+}
+
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+/* =========================
+GAME AREA
+========================= */
+
+#gameArea{
+    width:100%;
+    height:100vh;
+    overflow:hidden;
+    position:relative;
+    background:
+    linear-gradient(to bottom,
+    #000000,#111133,#000000);
+}
+
+/* =========================
+STARS
+========================= */
+
+.star{
+    width:3px;
+    height:3px;
+    background:white;
+    position:absolute;
+    border-radius:50%;
+}
+
+/* =========================
+PLAYER CAR
+========================= */
+
+#car{
+    width:80px;
+    height:130px;
+    background:
+    linear-gradient(to bottom,
+    #00c8ff,#0066ff);
+
+    position:absolute;
+    bottom:30px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    border-radius:15px;
+
+    border:3px solid white;
+
+    box-shadow:0 0 25px cyan;
+}
+
+/* =========================
+GUN
+========================= */
+
+#gun{
+    width:12px;
+    height:40px;
+    background:silver;
+    position:absolute;
+    top:-35px;
+    left:34px;
+    border-radius:10px;
+    box-shadow:0 0 10px white;
+}
+
+/* =========================
+NITRO FLAMES
+========================= */
+
+.flame{
+    width:18px;
+    height:35px;
+    background:orange;
+    position:absolute;
+    bottom:-30px;
+    border-radius:50%;
+    animation:flameAnim .2s infinite;
+    display:none;
+}
+
+#flame1{
+    left:10px;
+}
+
+#flame2{
+    right:10px;
+}
+
+@keyframes flameAnim{
+
+    0%{
+        transform:scaleY(1);
+        background:orange;
     }
 
-    #controls {
-        margin-top: 10px;
+    50%{
+        transform:scaleY(1.5);
+        background:yellow;
     }
 
-    button {
-        padding: 12px 20px;
-        font-size: 18px;
-        border: none;
-        border-radius: 8px;
-        margin: 5px;
-        cursor: pointer;
-        font-weight: bold;
+    100%{
+        transform:scaleY(1);
+        background:red;
+    }
+}
+
+/* =========================
+ALIEN SHIPS
+========================= */
+
+.enemy{
+    width:80px;
+    height:80px;
+    background:
+    radial-gradient(circle,
+    lime,green);
+
+    border-radius:50% 50% 20% 20%;
+
+    position:absolute;
+
+    top:-100px;
+
+    box-shadow:0 0 25px lime;
+
+    border:3px solid white;
+}
+
+/* =========================
+COINS
+========================= */
+
+.coin{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:gold;
+    position:absolute;
+    box-shadow:0 0 20px yellow;
+}
+
+/* =========================
+BULLETS
+========================= */
+
+.bullet{
+    width:8px;
+    height:20px;
+    background:yellow;
+    position:absolute;
+    border-radius:5px;
+    box-shadow:0 0 15px yellow;
+}
+
+/* =========================
+EXPLOSION
+========================= */
+
+.explosion{
+    width:80px;
+    height:80px;
+    background:orange;
+    border-radius:50%;
+    position:absolute;
+    animation:explode .5s forwards;
+}
+
+@keyframes explode{
+
+    0%{
+        transform:scale(.5);
+        opacity:1;
     }
 
-    #startBtn { background: #00cc44; color: white; }
-    #pauseBtn { background: #ff9933; color: white; display: none; }
-    #resumeBtn { background: #0099ff; color: white; display: none; }
-
-    #gameArea {
-        width: 100%;
-        height: 85vh;
-        position: relative;
-        overflow: hidden;
-        background: #222;
-        border-top: 3px solid #fff;
+    100%{
+        transform:scale(2);
+        opacity:0;
     }
+}
 
-    #car {
-        width: 70px;
-        height: 120px;
-        background: #00aaff;
-        border: 4px solid white;
-        border-radius: 10px;
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        box-shadow: 0 0 20px #00c8ff;
-    }
+/* =========================
+GAME OVER
+========================= */
 
-    .wheel {
-        width: 18px;
-        height: 35px;
-        background: black;
-        position: absolute;
-        border-radius: 5px;
-    }
-    .wheel.left { left: -20px; top: 20px; }
-    .wheel.right { right: -20px; top: 20px; }
-    .wheel.left2 { left: -20px; bottom: 20px; }
-    .wheel.right2 { right: -20px; bottom: 20px; }
+#gameOver{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:rgba(0,0,0,.9);
+    padding:30px;
+    border-radius:20px;
+    display:none;
+    z-index:1000;
+    text-align:center;
+}
 
-    .obstacle {
-        width: 60px;
-        height: 60px;
-        background: red;
-        border-radius: 10px;
-        position: absolute;
-    }
+#video{
+    display:none;
+}
 
-    #score {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        font-size: 26px;
-        color: #fff;
-    }
-
-    #video {
-        display: none;
-    }
 </style>
 </head>
+
 <body>
 
-<h2>🚗 Hand-Controlled Car Game</h2>
+<!-- =========================
+TOP BAR
+========================= -->
 
-<div id="controls">
-    <button id="startBtn">START</button>
-    <button id="pauseBtn">PAUSE</button>
-    <button id="resumeBtn">RESUME</button>
+<div id="topBar">
+
+<div>🏁 Score:
+<span id="score">0</span></div>
+
+<div>🪙 Coins:
+<span id="coins">0</span></div>
+
+<div>⚡ Nitro:
+<span id="nitro">READY</span></div>
+
+<div>🔫 Ammo:
+<span id="ammo">30</span></div>
+
+<div>🏆 Best:
+<span id="bestScore">0</span></div>
+
+<button id="startBtn">
+START
+</button>
+
 </div>
 
-<div id="score">Score: 0</div>
+<!-- =========================
+GAME AREA
+========================= -->
 
 <div id="gameArea">
-    <div id="car">
-        <div class="wheel left"></div>
-        <div class="wheel right"></div>
-        <div class="wheel left2"></div>
-        <div class="wheel right2"></div>
-    </div>
+
+<div id="car">
+
+<div id="gun"></div>
+
+<div class="flame"
+id="flame1"></div>
+
+<div class="flame"
+id="flame2"></div>
+
 </div>
 
-<video id="video" width="300" autoplay></video>
+<div id="gameOver">
 
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<h1>💥 GAME OVER</h1>
+
+<h2 id="finalScore"></h2>
+
+<button onclick="location.reload()">
+RESTART
+</button>
+
+</div>
+
+</div>
+
+<video id="video"
+autoplay
+playsinline></video>
+
+<!-- =========================
+AUDIO
+========================= -->
+
+<audio id="shootSound">
+<source src=
+"https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3?filename=laser-81720.mp3">
+</audio>
+
+<audio id="crashSound">
+<source src=
+"https://cdn.pixabay.com/download/audio/2022/03/15/audio_7f3fd8f7f8.mp3?filename=car-crash-110371.mp3">
+</audio>
+
+<!-- =========================
+MEDIAPIPE
+========================= -->
+
+<script src=
+"https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js">
+</script>
+
+<script src=
+"https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js">
+</script>
 
 <script>
-let gameArea = document.getElementById("gameArea");
-let car = document.getElementById("car");
-let scoreDisplay = document.getElementById("score");
 
-let startBtn = document.getElementById("startBtn");
-let pauseBtn = document.getElementById("pauseBtn");
-let resumeBtn = document.getElementById("resumeBtn");
+/* =========================
+VARIABLES
+========================= */
+
+const gameArea =
+document.getElementById("gameArea");
+
+const car =
+document.getElementById("car");
+
+const scoreText =
+document.getElementById("score");
+
+const coinText =
+document.getElementById("coins");
+
+const nitroText =
+document.getElementById("nitro");
+
+const ammoText =
+document.getElementById("ammo");
+
+const bestText =
+document.getElementById("bestScore");
+
+const startBtn =
+document.getElementById("startBtn");
+
+const gameOverBox =
+document.getElementById("gameOver");
+
+const finalScore =
+document.getElementById("finalScore");
+
+const flame1 =
+document.getElementById("flame1");
+
+const flame2 =
+document.getElementById("flame2");
 
 let score = 0;
-let running = false;
-let paused = false;
-let obstacleInterval = null;
 
-let handPresent = false;     
-let handLostTime = 0;        
+let coins = 0;
 
-/* ------------------------------
-   START GAME
----------------------------------*/
-startBtn.onclick = () => {
-    running = true;
-    paused = false;
+let speed = 5;
 
-    startBtn.style.display = "none";
-    pauseBtn.style.display = "inline-block";
+let gameRunning = false;
 
-    startObstacles();
+let nitroCooldown = false;
+
+let firing = false;
+
+let ammo = 30;
+
+let reloading = false;
+
+let best =
+localStorage.getItem("bestScore") || 0;
+
+bestText.innerHTML = best;
+
+/* =========================
+CREATE STARS
+========================= */
+
+for(let i=0;i<100;i++){
+
+    let star =
+    document.createElement("div");
+
+    star.classList.add("star");
+
+    star.style.left =
+    Math.random()*100+"%";
+
+    star.style.top =
+    Math.random()*100+"%";
+
+    gameArea.appendChild(star);
+}
+
+/* =========================
+START GAME
+========================= */
+
+startBtn.onclick = ()=>{
+
+    startBtn.style.display="none";
+
+    gameRunning = true;
+
+    startGame();
+
     startHandTracking();
 };
 
-/* ------------------------------
-   MANUAL PAUSE
----------------------------------*/
-pauseBtn.onclick = () => {
-    paused = true;
-    pauseBtn.style.display = "none";
-    resumeBtn.style.display = "inline-block";
-    clearInterval(obstacleInterval);
-};
+/* =========================
+MAIN LOOP
+========================= */
 
-/* ------------------------------
-   MANUAL RESUME
----------------------------------*/
-resumeBtn.onclick = () => {
-    paused = false;
-    resumeBtn.style.display = "none";
-    pauseBtn.style.display = "inline-block";
-    startObstacles();
-};
+function startGame(){
 
-/* ------------------------------
-   AUTO PAUSE / RESUME
----------------------------------*/
-function autoPause() {
-    if (!paused) {
-        paused = true;
-        pauseBtn.style.display = "none";
-        resumeBtn.style.display = "none"; // hide manual buttons
-        clearInterval(obstacleInterval);
-        console.log("GAME AUTO-PAUSED");
+    createEnemy();
+
+    createCoin();
+
+    requestAnimationFrame(playGame);
+}
+
+function playGame(){
+
+    if(!gameRunning) return;
+
+    moveEnemies();
+
+    moveCoins();
+
+    score++;
+
+    scoreText.innerHTML = score;
+
+    requestAnimationFrame(playGame);
+}
+
+/* =========================
+CREATE ALIEN SHIPS
+========================= */
+
+function createEnemy(){
+
+    setInterval(()=>{
+
+        if(!gameRunning) return;
+
+        let enemy =
+        document.createElement("div");
+
+        enemy.classList.add("enemy");
+
+        enemy.style.left =
+        Math.random()*80+"%";
+
+        enemy.y = -100;
+
+        gameArea.appendChild(enemy);
+
+    },1200);
+}
+
+/* =========================
+MOVE ENEMIES
+========================= */
+
+function moveEnemies(){
+
+    let enemies =
+    document.querySelectorAll(".enemy");
+
+    enemies.forEach(enemy=>{
+
+        enemy.y += speed;
+
+        enemy.style.top =
+        enemy.y + "px";
+
+        if(isCollide(car,enemy)){
+
+            endGame();
+        }
+
+        if(enemy.y >
+           window.innerHeight){
+
+            enemy.remove();
+        }
+    });
+}
+
+/* =========================
+COINS
+========================= */
+
+function createCoin(){
+
+    setInterval(()=>{
+
+        if(!gameRunning) return;
+
+        let coin =
+        document.createElement("div");
+
+        coin.classList.add("coin");
+
+        coin.style.left =
+        Math.random()*80+"%";
+
+        coin.y = -50;
+
+        gameArea.appendChild(coin);
+
+    },3000);
+}
+
+function moveCoins(){
+
+    let allCoins =
+    document.querySelectorAll(".coin");
+
+    allCoins.forEach(coin=>{
+
+        coin.y += speed;
+
+        coin.style.top =
+        coin.y + "px";
+
+        if(isCollide(car,coin)){
+
+            coins++;
+
+            coinText.innerHTML = coins;
+
+            coin.remove();
+        }
+
+        if(coin.y >
+           window.innerHeight){
+
+            coin.remove();
+        }
+    });
+}
+
+/* =========================
+COLLISION
+========================= */
+
+function isCollide(a,b){
+
+    let aRect =
+    a.getBoundingClientRect();
+
+    let bRect =
+    b.getBoundingClientRect();
+
+    return !(
+
+    aRect.bottom < bRect.top ||
+    aRect.top > bRect.bottom ||
+    aRect.right < bRect.left ||
+    aRect.left > bRect.right
+    );
+}
+
+/* =========================
+GAME OVER
+========================= */
+
+function endGame(){
+
+    gameRunning = false;
+
+    document.getElementById(
+    "crashSound").play();
+
+    finalScore.innerHTML =
+    "Final Score : " + score;
+
+    gameOverBox.style.display =
+    "block";
+
+    if(score > best){
+
+        localStorage.setItem(
+        "bestScore",score);
     }
 }
 
-function autoResume() {
-    if (paused && running) {
-        paused = false;
-        pauseBtn.style.display = "inline-block";
-        resumeBtn.style.display = "none";
-        startObstacles();
-        console.log("GAME AUTO-RESUMED");
+/* =========================
+SHOOT BULLET
+========================= */
+
+function shootBullet(){
+
+    if(ammo <= 0 || reloading)
+    return;
+
+    ammo--;
+
+    ammoText.innerHTML = ammo;
+
+    document.getElementById(
+    "shootSound").play();
+
+    let bullet =
+    document.createElement("div");
+
+    bullet.classList.add("bullet");
+
+    bullet.style.left =
+    car.offsetLeft + 36 + "px";
+
+    bullet.y =
+    window.innerHeight - 170;
+
+    bullet.style.top =
+    bullet.y + "px";
+
+    gameArea.appendChild(bullet);
+
+    let move =
+    setInterval(()=>{
+
+        bullet.y -= 18;
+
+        bullet.style.top =
+        bullet.y + "px";
+
+        let enemies =
+        document.querySelectorAll(".enemy");
+
+        enemies.forEach(enemy=>{
+
+            if(isCollide(
+            bullet,enemy)){
+
+                createExplosion(
+                enemy.offsetLeft,
+                enemy.offsetTop);
+
+                enemy.remove();
+
+                bullet.remove();
+
+                score += 100;
+            }
+        });
+
+        if(bullet.y < 0){
+
+            bullet.remove();
+
+            clearInterval(move);
+        }
+
+    },20);
+
+    /* RELOAD */
+
+    if(ammo <= 0){
+
+        reloading = true;
+
+        ammoText.innerHTML =
+        "RELOADING";
+
+        setTimeout(()=>{
+
+            ammo = 30;
+
+            ammoText.innerHTML =
+            ammo;
+
+            reloading = false;
+
+        },3000);
     }
 }
 
-/* ------------------------------
-   OBSTACLES
----------------------------------*/
-function startObstacles() {
-    obstacleInterval = setInterval(() => {
-        if (!running || paused) return;
+/* =========================
+AUTO FIRE
+========================= */
 
-        let obs = document.createElement("div");
-        obs.classList.add("obstacle");
-        obs.style.top = "0px";
-        obs.style.left = Math.random() * (window.innerWidth - 60) + "px";
-        gameArea.appendChild(obs);
+function autoFire(){
 
-        let fall = setInterval(() => {
-            if (paused) return;
+    if(firing) return;
 
-            let obsTop = parseInt(obs.style.top);
-            obs.style.top = (obsTop + 5) + "px";
+    firing = true;
 
-            let obsRect = obs.getBoundingClientRect();
-            let carRect = car.getBoundingClientRect();
+    let bulletsFired = 0;
 
-            if (!(obsRect.bottom < carRect.top ||
-                  obsRect.top > carRect.bottom ||
-                  obsRect.right < carRect.left ||
-                  obsRect.left > carRect.right)) {
+    let fireInterval =
+    setInterval(()=>{
 
-                alert("💥 Game Over! Score: " + score);
-                location.reload();
-            }
+        if(bulletsFired >= 30){
 
-            if (obsTop > window.innerHeight) {
-                obs.remove();
-                score++;
-                scoreDisplay.innerHTML = "Score: " + score;
-            }
+            clearInterval(
+            fireInterval);
 
-        }, 20);
+            firing = false;
 
-    }, 1500);
+            return;
+        }
+
+        shootBullet();
+
+        bulletsFired++;
+
+    },166);
 }
 
-/* ------------------------------
-   HAND TRACKING
----------------------------------*/
-async function startHandTracking() {
-    const video = document.getElementById("video");
+/* =========================
+EXPLOSION
+========================= */
 
-    const hands = new Hands({
-        locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+function createExplosion(x,y){
+
+    let explosion =
+    document.createElement("div");
+
+    explosion.classList.add(
+    "explosion");
+
+    explosion.style.left =
+    x + "px";
+
+    explosion.style.top =
+    y + "px";
+
+    gameArea.appendChild(
+    explosion);
+
+    setTimeout(()=>{
+
+        explosion.remove();
+
+    },500);
+}
+
+/* =========================
+HAND TRACKING
+========================= */
+
+async function startHandTracking(){
+
+    const video =
+    document.getElementById(
+    "video");
+
+    const hands =
+    new Hands({
+
+        locateFile:file=>
+        `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
     });
 
     hands.setOptions({
-        maxNumHands: 1,
-        modelComplexity: 0,
-        minDetectionConfidence: 0.6,
-        minTrackingConfidence: 0.5
+
+        maxNumHands:1,
+        modelComplexity:0,
+        minDetectionConfidence:.7,
+        minTrackingConfidence:.7
     });
 
-    hands.onResults(results => {
+    hands.onResults(results=>{
 
-        if (!running) return;
+        if(results.multiHandLandmarks
+        .length > 0){
 
-        if (results.multiHandLandmarks.length > 0) {
-            handPresent = true;
-            autoResume(); // auto resume game
+            let landmarks =
+            results.multiHandLandmarks[0];
 
-            let x = results.multiHandLandmarks[0][0].x;
-            let posX = (1 - x) * window.innerWidth;
-            car.style.left = posX + "px";
-        } 
-        else {
-            if (handPresent) {
-                handPresent = false;
-                handLostTime = Date.now();
+            /* CAR MOVE */
+
+            let x =
+            landmarks[9].x;
+
+            let moveX =
+            (1-x) *
+            (window.innerWidth-80);
+
+            car.style.left =
+            moveX + "px";
+
+            /* FINGERS */
+
+            let index =
+            landmarks[8].y <
+            landmarks[6].y;
+
+            let middle =
+            landmarks[12].y <
+            landmarks[10].y;
+
+            let ring =
+            landmarks[16].y <
+            landmarks[14].y;
+
+            let pinky =
+            landmarks[20].y <
+            landmarks[18].y;
+
+            let fingerCount = 0;
+
+            if(index) fingerCount++;
+            if(middle) fingerCount++;
+            if(ring) fingerCount++;
+            if(pinky) fingerCount++;
+
+            /* OPEN PALM */
+
+            if(fingerCount >= 4){
+
+                speed = 5;
+
+                nitroText.innerHTML =
+                "READY";
+
+                flame1.style.display =
+                "none";
+
+                flame2.style.display =
+                "none";
             }
 
-            // if hand missing for more than 500 ms → auto pause
-            if (Date.now() - handLostTime > 500) {
-                autoPause();
+            /* CLOSED FIST
+            = NITRO */
+
+            if(fingerCount === 0 &&
+            !nitroCooldown){
+
+                speed = 18;
+
+                nitroText.innerHTML =
+                "BOOST";
+
+                flame1.style.display =
+                "block";
+
+                flame2.style.display =
+                "block";
+
+                nitroCooldown = true;
+
+                setTimeout(()=>{
+
+                    speed = 5;
+
+                    nitroText.innerHTML =
+                    "READY";
+
+                    flame1.style.display =
+                    "none";
+
+                    flame2.style.display =
+                    "none";
+
+                    nitroCooldown = false;
+
+                },5000);
+            }
+
+            /* ONE FINGER
+            = AUTO FIRE */
+
+            if(fingerCount === 1){
+
+                autoFire();
             }
         }
-
     });
 
-    const cam = new Camera(video, {
-        onFrame: async () => {
-            await hands.send({ image: video });
+    const camera =
+    new Camera(video,{
+
+        onFrame:async()=>{
+
+            await hands.send({
+            image:video
+            });
         },
-        width: 300,
-        height: 200
+
+        width:640,
+        height:480
     });
 
-    cam.start();
+    camera.start();
 }
+
 </script>
 
 </body>
 </html>
-
